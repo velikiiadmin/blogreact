@@ -15,7 +15,7 @@ class PostUserWritePermission(BasePermission):
 
 class PostList(generics.ListCreateAPIView):
     # permission_classes = [IsAdminUser]
-    queryset = Post.objects.all()
+    queryset = Post.objects.filter(status='published')
     serializer_class = PostSerializer
 
 
