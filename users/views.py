@@ -28,4 +28,3 @@ class BlackListToken(APIView):
             token.blacklist()
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
-    pass
