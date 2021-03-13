@@ -4,6 +4,7 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS, IsAuthentic
 from rest_framework import viewsets
 from .serializers import *
 from rest_framework.response import Response
+from rest_framework import filters
 
 
 class PostUserWritePermission(BasePermission):
@@ -14,6 +15,25 @@ class PostUserWritePermission(BasePermission):
             return True
         return obj.author == request.user
 
+
+# Model View set
+class PostList(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
+    serializer_class = PostSerializer
+
+    def get_object(self, queryset=None, **kwargs):
+        item = self.kwargs.get('pk')
+        return get_object_or_404(Post, slug=item)
+
+    def get_queryset(self):
+        return Post.objects.all()
+
+
+class PostListDetailFilter(generics.ListAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['^slug']
 
 # class PostList(generics.ListCreateAPIView):
 #     permission_classes = [IsAuthenticated]
@@ -39,14 +59,3 @@ class PostUserWritePermission(BasePermission):
 #         post = get_object_or_404(self.queryset, pk=pk)
 #         serializer_class = PostSerializer(post)
 #         return Response(serializer_class.data)
-
-class PostList(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
-    serializer_class = PostSerializer
-
-    def get_object(self, queryset=None, **kwargs):
-        item = self.kwargs.get('pk')
-        return get_object_or_404(Post, slug=item)
-
-    def get_queryset(self):
-        return Post.objects.all()
